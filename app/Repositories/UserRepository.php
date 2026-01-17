@@ -1,0 +1,37 @@
+<?php
+
+namespace App\Repositories;
+
+use App\Models\User;
+use App\Repositories\Interfaces\UserRepositoryInterface;
+use App\DTOS\UserDtos\CreateUserDto;
+use App\DTOS\UserDtos\UpdateUserDto;
+
+class UserRepository implements UserRepositoryInterface
+{
+    public function getUserByEmail(string $email): User
+    {
+        return User::where('email', $email)->firstOrFail();
+    }
+
+    public function getUserByCpf(string $cpf): User
+    {
+        return User::where('cpf', $cpf)->firstOrFail();
+    }
+
+    public function createUser(CreateUserDto $data): User
+    {
+        return User::create($data->toArray());
+    }
+
+    public function updateUser(User $user, UpdateUserDto $data): User
+    {
+        $user->update($data->toArray());
+        return $user->refresh();
+    }
+
+    public function deleteUser(User $user): void
+    {
+        $user->deleteOrFail();
+    }
+}
