@@ -11,9 +11,19 @@ class UserService
 {
     public function __construct(private UserRepositoryInterface $userRepository) {}
 
+    public function getUserById(int $id): User
+    {
+        return $this->userRepository->getUserById($id);
+    }
+
     public function createUser(CreateUserDto $data): User
     {
         return $this->userRepository->createUser($data);
+    }
+
+    public function updateUserAmount(User $user, float $amount): User
+    {
+        return $this->userRepository->updateUserAmount($user, $amount);
     }
 
     public function updateUser(User $user, UpdateUserDto $data): User

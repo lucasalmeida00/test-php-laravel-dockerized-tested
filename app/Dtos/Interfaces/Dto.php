@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DTOS;
+namespace App\DTOS\Interfaces;
 
 interface Dto
 {

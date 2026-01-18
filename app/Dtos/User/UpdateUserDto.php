@@ -11,6 +11,7 @@ class UpdateUserDto implements Dto
         public string $cpf,
         public string $email,
         public string $password,
+        public float $amount,
     ) {}
 
     public function toArray(): array
@@ -20,6 +21,7 @@ class UpdateUserDto implements Dto
             'cpf' => $this->cpf,
             'email' => $this->email,
             'password' => $this->password,
+            'amount' => $this->amount,
         ];
     }
 
@@ -30,6 +32,7 @@ class UpdateUserDto implements Dto
             $data['cpf'],
             $data['email'],
             $data['password'],
+            $data['amount'],
         );
     }
 }

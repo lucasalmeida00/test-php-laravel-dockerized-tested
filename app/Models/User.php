@@ -64,8 +64,8 @@ class User extends Authenticatable
     public function amount(): Attribute
     {
         return new Attribute(
-            get: fn($value) => preg_replace('/[^0-9]/', '', $value),
-            set: fn($value) => preg_replace('/[^0-9]/', '', $value),
+            get: fn($value) => (float) $value,
+            set: fn($value) => (float) $value,
         );
     }
 
@@ -81,7 +81,7 @@ class User extends Authenticatable
 
     public function hasPermission(string $permission): bool
     {
-        return $this->roles->contains('permissions', $permission);
+        return $this->permissions()->contains('name', $permission);
     }
 
     public function assignRole(string $role): void

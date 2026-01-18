@@ -9,6 +9,11 @@ use App\DTOS\UserDtos\UpdateUserDto;
 
 class UserRepository implements UserRepositoryInterface
 {
+    public function getUserById(int $id): User
+    {
+        return User::findOrFail($id);
+    }
+
     public function getUserByEmail(string $email): User
     {
         return User::where('email', $email)->firstOrFail();
@@ -33,5 +38,12 @@ class UserRepository implements UserRepositoryInterface
     public function deleteUser(User $user): void
     {
         $user->deleteOrFail();
+    }
+
+    public function updateUserAmount(User $user, float $amount): User
+    {
+        $user->amount = $amount;
+        $user->save();
+        return $user->refresh();
     }
 }

@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Transfer extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, HasFactory;
 
     const STATUS_PENDING = 'pending';
     const STATUS_COMPLETED = 'completed';
