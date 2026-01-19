@@ -1,8 +1,8 @@
 <?php
 
-namespace App\DTOS\UserDtos;
+namespace App\Dtos\User;
 
-use App\DTOS\Dto;
+use App\Dtos\Interfaces\Dto;
 
 class CreateUserDto implements Dto
 {

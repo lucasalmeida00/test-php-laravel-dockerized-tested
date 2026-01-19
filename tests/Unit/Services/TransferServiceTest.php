@@ -12,6 +12,7 @@ use App\Repositories\Interfaces\TransferRepositoryInterface;
 use App\Repositories\Interfaces\RoleRepositoryInterface;
 use App\Repositories\Interfaces\PermissionRepositoryInterface;
 use App\Repositories\Interfaces\UserRepositoryInterface;
+use App\Services\Consumers\UtilsApi;
 use App\Services\UserService;
 use Illuminate\Support\Collection;
 use Tests\TestCase;
@@ -32,6 +33,7 @@ class TransferServiceTest extends TestCase
     private Mockery\LegacyMockInterface&Mockery\MockInterface&TransferRepositoryInterface $transferRepository;
 
     private Mockery\LegacyMockInterface&Mockery\MockInterface&UserService $userService;
+    private Mockery\LegacyMockInterface&Mockery\MockInterface&UtilsApi $utilsApi;
     private TransferService $transferService;
 
     protected function setUp(): void
@@ -68,7 +70,8 @@ class TransferServiceTest extends TestCase
         $this->transferRepository = Mockery::mock(TransferRepositoryInterface::class);
 
         $this->userService = Mockery::mock(UserService::class);
-        $this->transferService = new TransferService($this->transferRepository, $this->userService);
+        $this->utilsApi = Mockery::mock(UtilsApi::class);
+        $this->transferService = new TransferService($this->transferRepository, $this->userService, $this->utilsApi);
     }
 
     protected function tearDown(): void
@@ -93,6 +96,10 @@ class TransferServiceTest extends TestCase
             ->with($this->userDefault->id)
             ->andReturn($this->userDefault);
 
+        $this->utilsApi->shouldReceive('canTransfer')
+            ->once()
+            ->andReturn(true);
+
         $this->transferRepository
             ->shouldReceive('createTransfer')
             ->with($data)
@@ -113,6 +120,10 @@ class TransferServiceTest extends TestCase
         $this->userService->shouldReceive('updateUserAmount')
             ->with($this->userDefault, $this->userDefault->amount + $data->amount)
             ->andReturn($this->userDefault);
+
+        $this->utilsApi->shouldReceive('notifyTransfer')
+            ->once()
+            ->andReturn(true);
 
         $transfer = $this->transferService->createTransfer($data);
 
@@ -137,7 +148,6 @@ class TransferServiceTest extends TestCase
         $this->userService->shouldReceive('getUserById')
             ->with($this->userDefault->id)
             ->andReturn($this->userDefault);
-
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('User not have permission to transfer funds.');

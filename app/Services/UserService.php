@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use App\Repositories\Interfaces\UserRepositoryInterface;
-use App\DTOS\UserDtos\CreateUserDto;
-use App\DTOS\UserDtos\UpdateUserDto;
+use App\Dtos\User\CreateUserDto;
+use App\Dtos\User\UpdateUserDto;
 use App\Models\User;
 
 class UserService

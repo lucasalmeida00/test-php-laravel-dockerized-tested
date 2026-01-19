@@ -4,18 +4,21 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Utils\StringUtils;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, SoftDeletes;
+    use HasFactory, Notifiable, SoftDeletes, HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
@@ -24,10 +27,9 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'amount',
         'cpf',
         'email',
-        'amount',
-        'password',
     ];
 
     /**
@@ -48,35 +50,38 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
+            'created_at' => 'datetime:Y-m-d H:i:s',
+            'updated_at' => 'datetime:Y-m-d H:i:s',
+            'deleted_at' => 'datetime:Y-m-d H:i:s',
+            'email_verified_at' => 'datetime:Y-m-d H:i:s',
             'password' => 'hashed',
+            'amount' => 'float:2',
         ];
     }
 
-    public function cpf(): Attribute
+    public function getCpfAttribute(): string
     {
-        return new Attribute(
-            get: fn($value) => preg_replace('/[^0-9]/', '', $value),
-            set: fn($value) => preg_replace('/[^0-9]/', '', $value),
-        );
+        return StringUtils::maskCpf($this->attributes['cpf']);
     }
 
-    public function amount(): Attribute
+    public function getEmailAttribute(): string
     {
-        return new Attribute(
-            get: fn($value) => (float) $value,
-            set: fn($value) => (float) $value,
-        );
+        return StringUtils::maskEmail($this->attributes['email']);
     }
 
     public function roles(): BelongsToMany
     {
-        return $this->belongsToMany(Role::class);
+        return $this->belongsToMany(Role::class, 'user_role', 'user_id', 'role_id');
     }
 
     public function hasRole(string $role): bool
     {
-        return $this->roles->contains('name', $role);
+        return $this->roles()->where('name', $role)->exists();
+    }
+
+    public function permissions(): Collection
+    {
+        return $this->roles->pluck('permissions')->flatten()->unique();
     }
 
     public function hasPermission(string $permission): bool
@@ -87,10 +92,5 @@ class User extends Authenticatable
     public function assignRole(string $role): void
     {
         $this->roles()->attach($role);
-    }
-
-    public function permissions(): Collection
-    {
-        return $this->roles->pluck('permissions')->flatten()->unique();
     }
 }

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\DTOS\Transfer;
+namespace App\Dtos\Transfer;
 
-use App\DTOS\Interfaces\Dto;
+use App\Dtos\Interfaces\Dto;
 
 class TransferDto implements Dto
 {

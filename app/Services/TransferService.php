@@ -7,13 +7,15 @@ use App\Models\Permission;
 use App\Models\Transfer;
 use App\Models\User;
 use App\Repositories\Interfaces\TransferRepositoryInterface;
+use App\Services\Consumers\UtilsApi;
 use RuntimeException;
 
 class TransferService
 {
     public function __construct(
         private TransferRepositoryInterface $transferRepository,
-        private UserService $userService
+        private UserService $userService,
+        private UtilsApi $utilsApi
     ) {}
 
     public function createTransfer(TransferDto $data): Transfer
@@ -26,6 +28,8 @@ class TransferService
         $this->userService->updateUserAmount($user, $user->amount - $data->amount);
         $this->userService->updateUserAmount($recipient, $recipient->amount + $data->amount);
 
+        $this->utilsApi->notifyTransfer();
+
         return $this->transferRepository->createTransfer($data);
     }
 
@@ -35,6 +39,8 @@ class TransferService
             $this->validateCanTransfer($user);
             $this->validateCanTransferToRecipient($user, $recipient);
             $this->validateAmount($user, $recipient, $amount);
+            if (!$this->utilsApi->canTransfer())
+                throw new RuntimeException('The transfer is not authorized.');
         } catch (\Exception $e) {
             error_log($e->getMessage());
             throw new RuntimeException($e->getMessage());

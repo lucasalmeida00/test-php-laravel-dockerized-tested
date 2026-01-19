@@ -2,8 +2,8 @@
 
 namespace App\Repositories\Interfaces;
 
-use App\DTOS\UserDtos\CreateUserDto;
-use App\DTOS\UserDtos\UpdateUserDto;
+use App\Dtos\User\CreateUserDto;
+use App\Dtos\User\UpdateUserDto;
 use App\Models\User;
 
 interface UserRepositoryInterface

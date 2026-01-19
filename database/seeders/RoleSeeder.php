@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Permission;
 use Illuminate\Database\Seeder;
 use App\Models\Role;
 
@@ -18,10 +19,13 @@ class RoleSeeder extends Seeder
         ];
 
         foreach ($roles as $key => $role) {
-            Role::firstOrCreate([
+            $role = Role::firstOrCreate([
                 'name' => $key,
                 'description' => $role,
             ]);
+
+            if($key === Role::ROLE_SHOPMANAGER)
+                $role->permissions()->attach(Permission::where('name', Permission::PERMISSION_CAN_TRANSFER)->first());
         }
     }
 }
