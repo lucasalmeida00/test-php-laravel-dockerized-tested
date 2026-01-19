@@ -24,7 +24,7 @@ class RoleSeeder extends Seeder
                 'description' => $role,
             ]);
 
-            if($key === Role::ROLE_SHOPMANAGER)
+            if($key === Role::ROLE_DEFAULT)
                 $role->permissions()->attach(Permission::where('name', Permission::PERMISSION_CAN_TRANSFER)->first());
         }
     }

@@ -35,10 +35,10 @@ class UserSeeder extends Seeder
         foreach ($users as $user) {
             $userModel = User::create($user);
             if ($user['email'] === 'john@example.com') {
-                $userModel->roles()->attach(Role::where('name', Role::ROLE_SHOPMANAGER)->first());
+                $userModel->roles()->attach(Role::where('name', Role::ROLE_DEFAULT)->first());
             }
             if ($user['email'] === 'jane@example.com') {
-                $userModel->roles()->attach(Role::where('name', Role::ROLE_DEFAULT)->first());
+                $userModel->roles()->attach(Role::where('name', Role::ROLE_SHOPMANAGER)->first());
             }
         }
     }
